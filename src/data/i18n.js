@@ -15,7 +15,11 @@ var i18n={
     "fichier",
     "bestand",
     "датотека",
-    "dosya"
+    "dosya",
+    "fil"
+  ],
+  "images": [
+      "image"
   ],
   "templates": [
     "шаблён",
@@ -125,7 +129,7 @@ var i18n={
       "desambiguação",//pt
       "homonymie",//fr
       "неоднозначность",//ru
-      "anlam ayrımı",//tr
+      "anlam ayrımı"//tr
   ],
   "infoboxes":[
       "infobox",
@@ -135,7 +139,8 @@ var i18n={
       "inligtingskas3",//af
       "لغة",
       "bilgi kutusu",//tr
-      "yerleşim bilgi kutusu"
+      "yerleşim bilgi kutusu",
+      "infoboks" //nn, no
     ],
   "sources":[//blacklist these headings, as they're not plain-text
     "references",
@@ -146,7 +151,7 @@ var i18n={
     "voir aussi",
     "liens externes"
   ]
-}
+};
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports=i18n
