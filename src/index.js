@@ -129,12 +129,10 @@ var wtf_wikipedia = (function () {
     //next, map each line into a parsable sentence
     var output = {}
     var lines = wiki.replace(/\r/g, '').split(/\n/)
-    var section = "Intro"
     var number = 1
+    var section_level = 0
+    var section_arr = [output]
     lines.forEach(function (part) {
-      if(!section) {
-        return
-      }
       //add # numberings formatting
       if(part.match(/^ ?\#[^:,\|]{4}/i)) {
         part = part.replace(/^ ?#*/, number + ") ")
@@ -160,13 +158,27 @@ var wtf_wikipedia = (function () {
       //headings
       var ban_headings = new RegExp("^ ?(" + i18n.sources.join('|') + ") ?$", "i") //remove things like 'external links'
       if(part.match(/^={1,5}[^=]{1,200}={1,5}$/)) {
-        section = part.match(/^={1,5}([^=]{2,200}?)={1,5}$/) || []
-        section = section[1] || ''
+        section = part.match(/^(={1,5})([^=]{2,200}?)={1,5}$/) || []
+        var new_section_level = section[1].length
+        section = section[2] || ''
         section = section.replace(/\./g, ' ') // this is necessary for mongo, i'm sorry
         section = helpers.trim_whitespace(section)
           //ban some sections
         if(section && section.match(ban_headings)) {
           section = undefined
+        } else {
+          parent_section_level = new_section_level;
+          do {
+            parent_section_level--;
+          } while (section_arr[parent_section_level] === undefined);
+
+          var new_section = {}
+          section_arr[parent_section_level][section] = new_section
+          section_arr[new_section_level] = new_section
+          if (new_section_level < section_level) {
+            section_arr.splice(new_section_level + 1, Number.MAX_VALUE)
+          }
+          section_level = new_section_level
         }
         return
       }
@@ -174,10 +186,10 @@ var wtf_wikipedia = (function () {
       sentence_parser(part).forEach(function (line) {
         line = parse_line(line)
         if(line && line.text) {
-          if(!output[section]) {
-            output[section] = []
+          if(!section_arr[section_level]._content) {
+            section_arr[section_level]._content = []
           }
-          output[section].push(line)
+          section_arr[section_level]._content.push(line)
         }
       })
     })
